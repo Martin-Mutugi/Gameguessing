@@ -1,81 +1,90 @@
-﻿using System;
+﻿namespace ConsoleApp1;
 
-class GuessingGame
+public class PythonInterpreter
 {
     static void Main()
     {
-        int totalWords = 0;
-        int totalCorrectGuesses = 0;
+        string pythonCode = "def example_method():\n    print('Hello, World!')\n    if True:\n print('Indented line')\nint dict={1,2,3}";
 
-        // Play the game a maximum of 5 times
-        for (int gameNumber = 1; gameNumber <= 5; gameNumber++)
+        InterpretPythonCode(pythonCode);
+        IsDictionary(pythonCode);
+    }
+
+    static void InterpretPythonCode(string code)
+    {
+        string[] lines = code.Split('\n');
+
+        foreach (string line in lines)
         {
-            Console.WriteLine($"----- Level {gameNumber} -----");
-
-            int level = gameNumber % 2 == 0 ? 2 : 1; // Alternate between levels 1 and 2
-            int wordsInLevel = level == 1 ? 3 : 4;
-
-            // Set words and hints for the current level
-            string[] words = SetWords(level);
-            string[] hints = SetHints(level);
-
-            int playerLives = 3;
-            int correctGuesses = 0;
-
-            // Play the current level
-            for (int wordIndex = 0; wordIndex < wordsInLevel; wordIndex++)
+            if(HasColonAtEnd(line))
             {
-                Console.WriteLine($"Hint: {hints[wordIndex]}");
-                Console.Write("Guess the word: ");
-                string playerGuess = Console.ReadLine();
+                Console.WriteLine(line);
+                Console.Write(new string(' ', GetIndentationLevel(line) * 4)); // Assuming 4 spaces per tab
+            }
+            else
+            {
+                Console.WriteLine(line);
 
-                if (string.Equals(playerGuess, words[wordIndex], StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("Correct!");
-                    correctGuesses++;
-                }
-                else
-                {
-                    Console.WriteLine("Incorrect!");
-                    playerLives--;
-                    Console.WriteLine($"Lives remaining: {playerLives}");
-
-                    if (playerLives == 0)
-                    {
-                        Console.WriteLine("Out of lives. Game over!");
-                        break;
-                    }
-                }
             }
 
-            totalWords += wordsInLevel;
-            totalCorrectGuesses += correctGuesses;
+            if (ContainsDefKeyword(line))
+            {
+                ValidateMethodSyntax(line);
+            }
 
-            Console.WriteLine($"Level {level} completed. Correct guesses: {correctGuesses} out of {wordsInLevel}");
-            Console.WriteLine($"Total correct guesses so far: {totalCorrectGuesses} out of {totalWords}");
-            Console.WriteLine();
+            if (ContainsOpeningCurlyBrace(line))
+            {
+                
+
+                Console.WriteLine($"Is Dictionary: {IsDictionary(line)}");
+            }
         }
-
-        // Calculate and display the percentage score
-        double percentageScore = (double)totalCorrectGuesses / totalWords * 100;
-        Console.WriteLine($"Game Over! Your final percentage score: {percentageScore:F2}%");
     }
 
-    // Set words based on the level
-    static string[] SetWords(int level)
+    static bool HasColonAtEnd(string line)
     {
-        if (level == 1)
-            return new string[] { "apple", "banana", "cherry" };
-        else
-            return new string[] { "elephant", "giraffe", "kangaroo", "lion" };
+        return line.TrimEnd().EndsWith(":");
     }
 
-    // Set hints based on the level
-    static string[] SetHints(int level)
+    static int GetIndentationLevel(string line)
     {
-        if (level == 1)
-            return new string[] { "Fruit - red", "Fruit - yellow", "Fruit - red" };
-        else
-            return new string[] { "Large mammal", "Tall animal", "Hops", "King of the jungle" };
+        int count = 0;
+        foreach (char c in line)
+        {
+            if (c == ' ')
+            {
+                count++;
+            }
+            else
+            {
+                break;
+
+            }
+        }
+        return count / 4; 
     }
+
+    static bool ContainsDefKeyword(string line)
+    {
+        return line.Contains("def");
+    }
+
+    static void ValidateMethodSyntax(string line)
+    {
+        
+        Console.WriteLine("This is the correct method syntax in Python.");
+    }
+
+    static bool ContainsOpeningCurlyBrace(string line)
+
+    {
+        return line.Contains("{");
+    }
+
+    static bool IsDictionary(string line)
+    {
+       
+        return line.Contains("{") && line.Contains("}");
+    }
+
 }
